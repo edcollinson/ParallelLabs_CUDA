@@ -39,7 +39,7 @@ int main()
     cudaMemcpy(dev_b, b, arraySize * sizeof(int), cudaMemcpyHostToDevice);
     cudaMemcpy(dev_c, c, arraySize * sizeof(int), cudaMemcpyHostToDevice);
     cudaEventRecord(start, 0);
-    addKernel << <dim3(3, 2), dim3(3, 2) >> > (dev_c, dev_a, dev_b);
+    addKernel << <1, dim3(3, 2) >> > (dev_c, dev_a, dev_b);
     cudaEventRecord(stop, 0);
     //Calculate Elapsed time
     float elapsedTime;
