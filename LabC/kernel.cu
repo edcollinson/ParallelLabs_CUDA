@@ -20,18 +20,45 @@ int main()
     const int b[arraySize] = { 10, 20, 30, 40, 50 };
     int c[arraySize] = { 0 };
     int d = 0;
-    //
-    printf("PROGRAM START\n");
-    for (size_t i = 0; i < arraySize; i++)
-    {
-        c[i] = a[i] * b[i];
+
+    int* dev_a = 0;
+    int* dev_b = 0;
+    int* dev_c = 0;
+
+    cudaError_t cudaStatus;
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    cudaStatus = cudaMalloc((void**)&dev_a, arraySize * sizeof(int));
+    cudaStatus = cudaMalloc((void**)&dev_b, arraySize * sizeof(int));
+    cudaStatus = cudaMalloc((void**)&dev_c, arraySize * sizeof(int));
+    if (cudaStatus != cudaSuccess) {
+        fprintf(stderr, "cudaMalloc failed!");
     }
+    cudaMemcpy(dev_a, a, arraySize * sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(dev_b, b, arraySize * sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(dev_c, c, arraySize * sizeof(int), cudaMemcpyHostToDevice);
+    cudaEventRecord(start, 0);
+    addKernel << <1, arraySize >> > (dev_c, dev_a, dev_b);
+    cudaEventRecord(stop, 0);
+    //Calculate Elapsed time
+    float elapsedTime;
+    cudaDeviceSynchronize();
+    cudaEventElapsedTime(&elapsedTime, start, stop);
+    printf("Time elapsed the execution of kernel: %fn\n", elapsedTime);
+    cudaMemcpy(c, dev_c, arraySize * sizeof(int), cudaMemcpyDeviceToHost);
+    cudaFree(dev_c);
+    cudaFree(dev_a);
+    cudaFree(dev_b);
+
+    //Once completed, Destroy Cuda Events
+    cudaEventDestroy(start);
+    cudaEventDestroy(stop);
     for (size_t i = 0; i < arraySize; i++)
     {
         d += c[i];
     }
     printf("d = %d", d);
-
 }
 
 // Helper function for using CUDA to add vectors in parallel.
