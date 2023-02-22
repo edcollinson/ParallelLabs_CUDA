@@ -49,9 +49,15 @@ cudaTextureObject_t rgbaTexdImage;
 __global__ void d_render(uchar4* d_output, uint width, uint height, float tx,
     float ty, float scale, float cx, float cy,
     cudaTextureObject_t texObj) {
-    uint x = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-    uint y = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
-    uint i = __umul24(y, width) + x;
+    uint x = blockIdx.x * blockDim.x + threadIdx.x;
+    uint y = blockIdx.y * blockDim.y + threadIdx.y;
+    uint i = y * width + x;
+    //Scale
+    float angle = 0.5;
+
+    float rx = x * cos(angle) - y * sin(angle);
+    float ry = x * sin(angle) + y * cos(angle);
+    float c = tex2D<float>(texObj, rx, ry);
 
     float u = (x - cx) * scale + cx + tx;
     float v = (y - cy) * scale + cy + ty;

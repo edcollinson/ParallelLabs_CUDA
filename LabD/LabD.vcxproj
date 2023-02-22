@@ -16,9 +16,13 @@
   <ItemGroup>
     <ClCompile Include="ImageProcess_cuda.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="x64\Debug\lena_bw.pgm" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{23B0083D-E2F6-4CD5-8F81-890171E13DB8}</ProjectGuid>
     <RootNamespace>LabD</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
